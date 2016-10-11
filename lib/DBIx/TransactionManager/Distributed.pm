@@ -1,5 +1,6 @@
 package DBIx::TransactionManager::Distributed
 
+use 5.006;
 use strict;
 use warnings;
 
