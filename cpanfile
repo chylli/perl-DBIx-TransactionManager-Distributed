@@ -15,6 +15,7 @@ on test => sub {
     requires 'Devel::Cover::Report::Coveralls';
     requires 'DBI', '1.634';
     requires 'DBD::Mock', '1.45';
+    requires 'Devel::Refcount', '0.10';
 };
 
 on develop => sub {
