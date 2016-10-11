@@ -1,6 +1,5 @@
-package DBIx::TransactionManager::Distributed
+package DBIx::TransactionManager::Distributed;
 
-use 5.006;
 use strict;
 use warnings;
 
@@ -16,7 +15,7 @@ BOM::Database
 
 =cut
 
-our $VERSION = 0.01;
+our $VERSION = "0.01";
 
 =head1 DESCRIPTION
 
