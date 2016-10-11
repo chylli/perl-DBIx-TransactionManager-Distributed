@@ -60,7 +60,7 @@ subtest register_fork => sub {
     is(register_dbh('category2', $dbh2), $dbh2, 'register dbh2');
     ok(dbh_is_registered('category1', $dbh1), 'the dbh1 is registered in category1');
     ok(dbh_is_registered('category2', $dbh2), 'the dbh2 is registered in category2');
-    local $$ = 1;
+    local $$ = fake_pid();
     my $dbh3 = DBI->connect('DBI:Mock:', '', '');
     is(register_dbh('category3', $dbh3), $dbh3, 'register dbh3');
     ok(!dbh_is_registered('category1', $dbh1), 'the dbh1 is dropped because pid changed');
@@ -88,6 +88,7 @@ subtest txn => sub {
     clear_dbh_for_txn_test();
     ($dbh1_1, $dbh1_2, $dbh2_1) = init_dbh_for_txn_test();
     $code = sub {
+        my ($dbh1_1, $dbh1_2, $dbh_2_1) = @_;
         $dbh1_1->do('select 1_1');
         $dbh1_2->do('select 1_2');
         $dbh2_1->do('select 2_1');
@@ -96,7 +97,7 @@ subtest txn => sub {
     my $result;
     warning_is(
         sub {
-            $result = txn(sub { $code->() }, 'category1');
+            $result = txn(sub { $code->($dbh1_1, $dbh1_2, $dbh2_1) }, 'category1');
         },
         undef,
         'no warning for normal case'
@@ -121,7 +122,7 @@ subtest txn => sub {
         $dbh->{AutoCommit}         = 1;    # DBD::Mock has an bug. the second dbh cannot reset autocommit after commit. so we reset it by hand
     }
 
-    my @result = txn(sub { $code->() }, 'category1');
+    my @result = txn(sub { $code->($dbh1_1, $dbh1_2, $dbh2_1) }, 'category1');
     is_deeply(\@result, [qw(1_1 1_2 2_1)], 'wantarray will get a list');
 
     for my $dbh ($dbh1_1, $dbh1_2, $dbh2_1) {
@@ -136,13 +137,42 @@ subtest txn => sub {
     };
     warnings_like {
         throws_ok {
-            txn(sub { $code->() }, 'category1');
+            txn(sub { $code->($dbh1_1, $dbh1_2, $dbh2_1) }, 'category1');
         }
         qr/simulate parse error/, "will die if error";
     }
     [qr/simulate parse error/, qr/Error in transaction/, qr/simulate rollback error/, qr/^after/is], "have warnings";
     $history = $dbh1_1->{mock_all_history};
-    is($history->[-1]->statement, 'ROLLBACK', 'dbh2_1 no begin_work and commit');
+    is($history->[-1]->statement, 'ROLLBACK', 'dbh1_1 rollbacked');
+
+    # test fork
+    clear_dbh_for_txn_test();
+    ($dbh1_1, $dbh1_2, $dbh2_1) = init_dbh_for_txn_test();
+    local $$ = fake_pid();    # change $$ to simulate fork
+    lives_ok {
+        txn(sub { $code->($dbh1_1, $dbh1_2, $dbh2_1) }, 'category1');
+    };
+    $history = $dbh1_1->{mock_all_history};
+    is(scalar @$history,          1,            'no begin_work and rollback because fork will clear all registered dbh');
+    is($history->[-1]->statement, 'select 1_1', 'only select statement');
+
+    clear_dbh_for_txn_test();
+    ($dbh1_1, $dbh1_2, $dbh2_1) = init_dbh_for_txn_test();
+    $code = sub {
+        my ($dbh1_1, $dbh1_2, $dbh_2_1) = @_;
+        $$ = fake_pid();      # change $$ to simulate fork
+        $dbh1_1->do('select 1_1');
+        $dbh1_2->do('select 1_2');
+        $dbh2_1->do('select 2_1');
+        return wantarray ? qw(1_1 1_2 2_1) : "1";
+    };
+    lives_ok {
+        txn(sub { $code->($dbh1_1, $dbh1_2, $dbh2_1) }, 'category1');
+    };
+    $history = $dbh1_1->{mock_all_history};
+    is(scalar @$history,         2,            'no commit because fork will clear all registered dbh');
+    is($history->[0]->statement, 'BEGIN WORK', 'has begin work');
+    is($history->[1]->statement, 'select 1_1', 'has select');
 
 };
 
@@ -157,9 +187,17 @@ sub init_dbh_for_txn_test {
 }
 
 sub clear_dbh_for_txn_test {
-    local $$ = 1;
+    local $$ = fake_pid();
     DBIx::TransactionManager::Distributed::_check_fork();
 }
 
+{
+    my $pid = 1;
+
+    sub fake_pid {
+        return $pid++;
+    }
+
+}
 done_testing;
 
