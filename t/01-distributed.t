@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 use 5.006;
 use strict;
 use warnings;
@@ -118,6 +118,7 @@ subtest txn => sub {
 
     for my $dbh ($dbh1_1, $dbh1_2, $dbh2_1) {
         $dbh->{mock_clear_history} = 1;
+        $dbh->{AutoCommit}         = 1;    # DBD::Mock has an bug. the second dbh cannot reset autocommit after commit. so we reset it by hand
     }
 
     my @result = txn(sub { $code->() }, 'category1');
