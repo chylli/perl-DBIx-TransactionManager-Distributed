@@ -13,8 +13,13 @@ on build => sub {
 on test => sub {
     requires 'Test::More', '0.94';
     requires 'Devel::Cover::Report::Coveralls';
+    requiers 'DBI', '1.634';
+    requires 'DBD::Mock', '1.45';
 };
 
 on develop => sub {
-    requires 'Test::More', '0.88';
+    requires 'Test::More', '0.94';
+    requires 'Devel::Cover::Report::Coveralls';
+    requiers 'DBI', '1.634';
+    requires 'DBD::Mock', '1.45';
 };
