@@ -7,7 +7,7 @@ use Test::Exception;
 use Test::Warn;
 use DBI;
 use DBD::Mock;
-use DBIx::TransactionManager::Distributed qw(register_dbh release_dbh dbh_is_registered txn);
+use DBIx::TransactionManager::Distributed qw(register_dbh release_dbh dbh_is_registered txn register_cached_dbh);
 use Scalar::Util qw(refaddr);
 use Devel::Refcount qw(refcount);
 
@@ -25,6 +25,8 @@ subtest register_dbh => sub {
     ok(!$result, 'register failed');
     my $history = $dbh->{mock_all_history};
     is(scalar(@$history), 0, 'no statement executed');
+    warning_is(sub { $result = register_cached_dbh('category1', $dbh) }, undef, 'but register again with cached_dbh  will success');
+    ok($result, 'register success');
     is(release_dbh('category1', $dbh), $dbh, 'release successfully');
     warning_is(sub { register_dbh('category1', $dbh) },
         undef, 'register 3rd time to same category will not failed because previous register already released');

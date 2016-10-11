@@ -60,7 +60,7 @@ Example:
 
     sub _dbh {
         my $dbh = DBI->connect('dbi:Pg', '', '', { RaiseError => 1});
-        return BOM::Database::register_dbh(category => $dbh);
+        return DBIx::TransactionManager::Distributaed::register_dbh(category => $dbh);
     }
 
 =cut
@@ -96,7 +96,7 @@ Example:
     sub DESTROY {
         my $self = shift;
         return if ${^GLOBAL_PHASE} eq 'DESTRUCT';
-        BOM::Database::release_dbh($self->dbh)->disconnect;
+        DBIx::TransactionManager::Distributaed::release_dbh($self->dbh)->disconnect;
     }
 
 =cut
@@ -110,7 +110,7 @@ sub release_dbh {
     unless (exists $DBH_SOURCE{$category}{$addr}) {
         my @other_categories = grep exists $DBH_SOURCE{$_}{$addr}, sort keys %DBH_SOURCE;
         warn "releasing unregistered dbh $dbh for category $category"
-            . (@other_categories ? " (but found it in these categories instead: " . join ', ', @other_categories , ')' : '');
+            . (@other_categories ? " (but found it in these categories instead: " . join ', ', @other_categories, ')' : '');
         # If we did find it elsewhere, make sure we do cleanup to reduce confusion
         _remove_dbh_from_category($_ => $dbh) for @other_categories;
     }
@@ -173,7 +173,7 @@ Example:
 
 sub register_cached_dbh {
     my ($category, $dbh) = @_;
-    register_dbh($category => $dbh) unless BOM::Database::dbh_is_registered($category => $dbh);
+    register_dbh($category => $dbh) unless dbh_is_registered($category => $dbh);
     $dbh->begin_work if $IN_TRANSACTION && $dbh->{AutoCommit};
     $dbh;
 }
@@ -217,7 +217,7 @@ sub txn(&;@) {
     eval {
         for my $category (@categories) {
             $_->begin_work for @{$DBH{$category}};
-          }
+        }
         local $IN_TRANSACTION = 1;
         # We want to pass through list/scalar/void context to the coderef
         if ($wantarray) {
