@@ -12,6 +12,7 @@ on build => sub {
 
 on test => sub {
     requires 'Test::More', '0.94';
+    requires 'Devel::Cover::Report::Coveralls';
 };
 
 on develop => sub {
