@@ -124,12 +124,32 @@ subtest txn => sub {
     my @result = txn(sub { $code->() }, 'category1');
     is_deeply(\@result, [qw(1_1 1_2 2_1)], 'wantarray will get a list');
 
+    for my $dbh ($dbh1_1, $dbh1_2, $dbh2_1) {
+        $dbh->{mock_clear_history} = 1;
+        $dbh->{AutoCommit}         = 1;    # DBD::Mock has an bug. the second dbh cannot reset autocommit after commit. so we reset it by hand
+    }
+
+    $dbh1_2->{mock_add_parser} = sub {
+        my $sql = shift;
+        die "simulate parse error"    if $sql =~ /select/;
+        die "simulate rollback error" if $sql =~ /rollback/i;
+    };
+    warnings_like {
+        throws_ok {
+            txn(sub { $code->() }, 'category1');
+        }
+        qr/simulate parse error/, "will die if error";
+    }
+    [qr/simulate parse error/, qr/Error in transaction/, qr/simulate rollback error/, qr/^after/is], "have warnings";
+    $history = $dbh1_1->{mock_all_history};
+    is($history->[-1]->statement, 'ROLLBACK', 'dbh2_1 no begin_work and commit');
+
 };
 
 sub init_dbh_for_txn_test {
-    my $dbh1_1 = DBI->connect('DBI:Mock:', '', '');
-    my $dbh1_2 = DBI->connect('DBI:Mock:', '', '');
-    my $dbh2_1 = DBI->connect('DBI:Mock:', '', '');
+    my $dbh1_1 = DBI->connect('DBI:Mock:', '', '', {RaiseError => 1});
+    my $dbh1_2 = DBI->connect('DBI:Mock:', '', '', {RaiseError => 1});
+    my $dbh2_1 = DBI->connect('DBI:Mock:', '', '', {RaiseError => 1});
     ok(register_dbh('category1', $dbh1_1));
     ok(register_dbh('category1', $dbh1_2));
     ok(register_dbh('category2', $dbh2_1));
