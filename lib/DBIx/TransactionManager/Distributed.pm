@@ -7,7 +7,7 @@ use Exporter qw(import export_to_level);
 
 =head1 NAME
 
-BOM::Database
+DBIx::TransactionManager::Distributed;
 
 =head1 VERSION
 
@@ -60,7 +60,7 @@ Example:
 
     sub _dbh {
         my $dbh = DBI->connect('dbi:Pg', '', '', { RaiseError => 1});
-        return BOM::Database::register_dbh(feed => $dbh);
+        return BOM::Database::register_dbh(category => $dbh);
     }
 
 =cut
@@ -154,9 +154,26 @@ sub dbh_is_registered {
     return exists $DBH_SOURCE{$category}{$addr} ? 1 : 0;
 }
 
+=head2 register_cached_dbh
+
+Records the given database handle created via L<DBI/connect_cached> as being active and available for running transactions against.
+
+Expects a category (string value) and L<DBI::db> instance.
+
+Returns the database handle.
+
+Example:
+
+    sub _dbh {
+        my $dbh = DBI->connect_cached('dbi:Pg', '', '', { RaiseError => 1});
+        return register_cached_dbh('category' => $dbh);
+    }
+
+=cut
+
 sub register_cached_dbh {
     my ($category, $dbh) = @_;
-    register_dbh($category => $dbh) unless BOM::Database::dbh_is_registered(feed => $dbh);
+    register_dbh($category => $dbh) unless BOM::Database::dbh_is_registered($category => $dbh);
     $dbh->begin_work if $IN_TRANSACTION && $dbh->{AutoCommit};
     $dbh;
 }
@@ -174,7 +191,7 @@ Will raise an exception on failure, or return an empty list on success.
 
 Example:
 
-    txn { dbh()->do('NOTIFY something') } 'feed';
+    txn { dbh()->do('NOTIFY something') } 'category';
 
 WARNING: This only applies transactions to known database handles. Anything else -
 Redis, cache layers, files on disk - is out of scope. Transactions are a simple
