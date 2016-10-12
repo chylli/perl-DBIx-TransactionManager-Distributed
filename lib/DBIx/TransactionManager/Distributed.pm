@@ -24,7 +24,30 @@ Generic database handling utilities.
 Currently provides a minimal database handle tracking facility, allowing code
 to request a transaction against all active database handles.
 
+=head1 SYNOPSIS
+
+    use DBIx::TransactionManager::Distributed qw(register_dbh release_dbh txn);
+    my $dbh1 = DBI->connect('dbi:Pg', '', '', { RaiseError => 1});
+    my $dbh2 = DBI->connect('dbi:Pg', '', '', { RaiseError => 1});
+    my $dbh3 = DBI->connect('dbi:Pg', '', '', { RaiseError => 1});
+
+    register_dbh(category1 => $dbh1);
+    register_dbh(category1 => $dbh2);
+    register_dbh(category2 => $dbh2);
+    register_dbh(category2 => $dbh3);
+
+    txn { $dbh1->do('update ta set name = "a"'); $dbh2->do('insert into tb values (1)') } 'category1';
+    txn { $dbh2->do('update tc set name = "b"'); $dbh3->do('insert into td values (2)') } 'category2';
+
+    release_dbh(category1 => $dbh1);
+    release_dbh(category1 => $dbh1);
+    release_dbh(category2 => $dbh2);
+    release_dbh(category3 => $dbh3);
+
 =cut
+
+
+
 
 use Scalar::Util qw(weaken refaddr);
 use List::UtilsBy qw(extract_by);
@@ -266,3 +289,12 @@ sub _check_fork {
 
 1;
 
+=head1 SEE ALSO
+
+L<DBIx::TransactionManager>
+
+L<DBIx::ScopedTransaction>
+
+L<DBIx::Class::Storage::TxnScopeGuard>
+
+These modules are also handling scope-based transaction. The main difference is this one operates across database handles with different categories.
