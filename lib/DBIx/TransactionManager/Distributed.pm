@@ -46,9 +46,6 @@ to request a transaction against all active database handles.
 
 =cut
 
-
-
-
 use Scalar::Util qw(weaken refaddr);
 use List::UtilsBy qw(extract_by);
 
@@ -91,9 +88,8 @@ Example:
 sub register_dbh {
     my ($category, $dbh) = @_;
     die "too many parameters to register_dbh: @_" if @_ > 2;
-    _check_fork();
     my $addr = refaddr $dbh;
-    if (exists $DBH_SOURCE{$category}{$addr}) {
+    if (dbh_is_registered($category, $dbh)) {
         warn "already registered this database handle at " . $DBH_SOURCE{$category}{$addr};
         return;
     }
@@ -127,10 +123,9 @@ Example:
 sub release_dbh {
     my ($category, $dbh) = @_;
     die "too many parameters to release_dbh: @_" if @_ > 2;
-    _check_fork();
     # At destruction we may have an invalid handle
     my $addr = refaddr $dbh or return $dbh;
-    unless (exists $DBH_SOURCE{$category}{$addr}) {
+    unless (dbh_is_registered($category, $dbh)) {
         my @other_categories = grep exists $DBH_SOURCE{$_}{$addr}, sort keys %DBH_SOURCE;
         warn "releasing unregistered dbh $dbh for category $category"
             . (@other_categories ? " (but found it in these categories instead: " . join ', ', @other_categories, ')' : '');
