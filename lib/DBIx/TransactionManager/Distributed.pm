@@ -234,7 +234,7 @@ sub txn(&;@) {
     my @rslt;
     eval {
         for my $category (@categories) {
-            $_->begin_work for @{$DBH{$category}};
+            $_->{AutoCommit} && $_->begin_work for @{$DBH{$category}};
         }
         local $IN_TRANSACTION = 1;
         # We want to pass through list/scalar/void context to the coderef
