@@ -286,10 +286,16 @@ sub _check_fork {
 
 =head1 SEE ALSO
 
-L<DBIx::TransactionManager>
+=over
 
-L<DBIx::ScopedTransaction>
+=item L<DBIx::TransactionManager>
 
-L<DBIx::Class::Storage::TxnScopeGuard>
+=item L<DBIx::ScopedTransaction>
+
+=item L<DBIx::Class::Storage::TxnScopeGuard>
+
+=back
 
 These modules are also handling scope-based transaction. The main difference is this one operates across database handles with different categories.
+
+=cut
