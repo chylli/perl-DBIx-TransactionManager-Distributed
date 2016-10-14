@@ -53,6 +53,7 @@ subtest register_dbh => sub {
         'has warnings because dbh already released before'
     );
     ok(!dbh_is_registered('category2', $dbh), 'dbh should not be in category2 now');
+    done_testing();
 };
 
 subtest register_fork => sub {
@@ -69,6 +70,7 @@ subtest register_fork => sub {
     ok(!dbh_is_registered('category2', $dbh2), 'the dbh2 is dropped because pid changed');
     ok(dbh_is_registered('category3', $dbh3), 'dbh3 is still there');
     ok(release_dbh('category3', $dbh3), 'clear dbh');
+    done_testing();
 };
 
 subtest txn => sub {
@@ -189,7 +191,7 @@ subtest txn => sub {
     is(scalar @$history,         2,            'no commit because fork will clear all registered dbh');
     is($history->[0]->statement, 'BEGIN WORK', 'has begin work');
     is($history->[1]->statement, 'select 1_1', 'has select');
-
+    done_testing();
 };
 
 sub init_dbh_for_txn_test {
