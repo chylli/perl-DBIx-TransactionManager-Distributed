@@ -120,10 +120,8 @@ Returns true if there has been a fork since last check, false otherwise.
 
 # SEE ALSO
 
-[DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager)
-
-[DBIx::ScopedTransaction](https://metacpan.org/pod/DBIx::ScopedTransaction)
-
-[DBIx::Class::Storage::TxnScopeGuard](https://metacpan.org/pod/DBIx::Class::Storage::TxnScopeGuard)
+- [DBIx::TransactionManager](https://metacpan.org/pod/DBIx::TransactionManager)
+- [DBIx::ScopedTransaction](https://metacpan.org/pod/DBIx::ScopedTransaction)
+- [DBIx::Class::Storage::TxnScopeGuard](https://metacpan.org/pod/DBIx::Class::Storage::TxnScopeGuard)
 
 These modules are also handling scope-based transaction. The main difference is this one operates across database handles with different categories.

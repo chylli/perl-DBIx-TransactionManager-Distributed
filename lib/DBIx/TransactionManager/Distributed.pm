@@ -11,11 +11,11 @@ DBIx::TransactionManager::Distributed;
 
 =head1 VERSION
 
-  0.01
+  0.02
 
 =cut
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 =head1 DESCRIPTION
 
@@ -286,10 +286,16 @@ sub _check_fork {
 
 =head1 SEE ALSO
 
-L<DBIx::TransactionManager>
+=over
 
-L<DBIx::ScopedTransaction>
+=item L<DBIx::TransactionManager>
 
-L<DBIx::Class::Storage::TxnScopeGuard>
+=item L<DBIx::ScopedTransaction>
+
+=item L<DBIx::Class::Storage::TxnScopeGuard>
+
+=back
 
 These modules are also handling scope-based transaction. The main difference is this one operates across database handles with different categories.
+
+=cut
