@@ -12,7 +12,6 @@ on build => sub {
 
 on test => sub {
     requires 'Test::More', '>= 0.98';
-    requires 'Devel::Cover::Report::Coveralls', '>= 0.11';
     requires 'DBI', '>= 1.634';
     requires 'DBD::Mock', '>= 1.45';
     requires 'Devel::Refcount', '>= 0.10';
