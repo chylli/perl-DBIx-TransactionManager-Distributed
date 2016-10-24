@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/binary-com/perl-DBIx-TransactionManager-Distributed.svg?branch=master)](https://travis-ci.org/binary-com/perl-DBIx-TransactionManager-Distributed)
+[![codecov](https://codecov.io/gh/binary-com/perl-DBIx-TransactionManager-Distributed/branch/master/graph/badge.svg)](https://codecov.io/gh/binary-com/perl-DBIx-TransactionManager-Distributed)
+
 # NAME
 
 DBIx::TransactionManager::Distributed;
