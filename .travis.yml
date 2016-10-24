@@ -11,7 +11,6 @@ perl:
    - '5.14'
    - '5.12'
    - '5.10'
-env: CODECOV_TOKEN=b3477256-2f47-438d-9c07-fca9f0a68262
 matrix:
    fast_finish: true
 before_install:
