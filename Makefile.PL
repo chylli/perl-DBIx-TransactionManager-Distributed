@@ -31,12 +31,12 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "Test::CheckDeps" => "0.010",
     "Test::Deep" => "0.113",
-    "Test::Fatal" => "0.014",
+    "Test::Fatal" => "0.013",
     "Test::More" => "0.98",
     "Test::Refcount" => "0.08",
     "Test::Warnings" => "0.026"
   },
-  "VERSION" => "0.022",
+  "VERSION" => "0.023",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -56,7 +56,7 @@ my %FallbackPrereqs = (
   "Scalar::Util" => 0,
   "Test::CheckDeps" => "0.010",
   "Test::Deep" => "0.113",
-  "Test::Fatal" => "0.014",
+  "Test::Fatal" => "0.013",
   "Test::More" => "0.98",
   "Test::Refcount" => "0.08",
   "Test::Warnings" => "0.026"
