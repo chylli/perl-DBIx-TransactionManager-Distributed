@@ -11,11 +11,11 @@ DBIx::TransactionManager::Distributed;
 
 =head1 VERSION
 
-  0.02
+  0.021
 
 =cut
 
-our $VERSION = "0.020000001";
+our $VERSION = "0.021";
 
 =head1 DESCRIPTION
 
