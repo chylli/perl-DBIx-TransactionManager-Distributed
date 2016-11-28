@@ -12,12 +12,12 @@ on build => sub {
 
 on test => sub {
     requires 'Test::More', '>= 0.98';
-    requires 'DBI', '>= 1.634';
+    requires 'DBI', '>= 1.632';
     requires 'DBD::Mock', '>= 1.45';
     requires 'Devel::Refcount', '>= 0.10';
     requires 'Test::Fatal', '>= 0.014';
     requires 'Test::Warnings', '>= 0.026';
-    requires 'Test::Deep', '>= 1.120';
+    requires 'Test::Deep', '>= 0.113';
     requires 'Test::Refcount', '>= 0.08';
 };
 
