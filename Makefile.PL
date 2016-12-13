@@ -23,20 +23,20 @@ my %WriteMakefileArgs = (
   },
   "TEST_REQUIRES" => {
     "DBD::Mock" => "1.45",
-    "DBI" => "1.634",
+    "DBI" => "1.632",
     "Devel::Refcount" => "0.10",
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
     "IO::Handle" => 0,
     "IPC::Open3" => 0,
     "Test::CheckDeps" => "0.010",
-    "Test::Deep" => "1.120",
-    "Test::Fatal" => "0.014",
+    "Test::Deep" => "0.113",
+    "Test::Fatal" => "0.013",
     "Test::More" => "0.98",
     "Test::Refcount" => "0.08",
     "Test::Warnings" => "0.026"
   },
-  "VERSION" => "0.02",
+  "VERSION" => "0.023",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -45,7 +45,7 @@ my %WriteMakefileArgs = (
 
 my %FallbackPrereqs = (
   "DBD::Mock" => "1.45",
-  "DBI" => "1.634",
+  "DBI" => "1.632",
   "Devel::Refcount" => "0.10",
   "Exporter" => 0,
   "ExtUtils::MakeMaker" => 0,
@@ -55,8 +55,8 @@ my %FallbackPrereqs = (
   "List::UtilsBy" => 0,
   "Scalar::Util" => 0,
   "Test::CheckDeps" => "0.010",
-  "Test::Deep" => "1.120",
-  "Test::Fatal" => "0.014",
+  "Test::Deep" => "0.113",
+  "Test::Fatal" => "0.013",
   "Test::More" => "0.98",
   "Test::Refcount" => "0.08",
   "Test::Warnings" => "0.026"
